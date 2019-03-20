@@ -1,0 +1,1 @@
+{"message":"Invalid username/password.","stack":"Error: Invalid username/password.\n    at req.config.database.find.then.then.then (C:\\Projects\\vue-element-admin\\node_modules\\parse-server\\lib\\Routers\\UsersRouter.js:123:17)","code":101,"level":"error","timestamp":"2019-01-11T08:09:04.248Z"}

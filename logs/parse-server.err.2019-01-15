@@ -1,0 +1,1 @@
+{"message":"Object not found.","stack":"Error: Object not found.\n    at _rest.default.get.then.response (C:\\Projects\\vue-element-admin\\node_modules\\parse-server\\lib\\Routers\\ClassesRouter.js:70:15)\n    at process._tickCallback (internal/process/next_tick.js:68:7)","code":101,"level":"error","timestamp":"2019-01-15T03:26:29.311Z"}
