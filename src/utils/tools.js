@@ -1,28 +1,26 @@
 
-export function cleanData(obj){
-  const {ACL,createdAt,updatedAt,...data} = obj
+export function cleanData(obj) {
+  // eslint-disable-next-line no-unused-vars
+  const { ACL, createdAt, updatedAt, ...data } = obj
   data.className = obj.className
-  Object.keys(data).forEach(key=>{
-    if(typeof data[key] === "object" && data[key].toJSON){
+  Object.keys(data).forEach(key => {
+    if (typeof data[key] === 'object' && data[key].toJSON) {
       data[key] = cleanData(data[key])
     }
   })
   return data
 }
 
-
 export const Type = (function() {
-  let type = {};
-  const typeArr = ['String', 'Object', 'Number', 'Array','Undefined', 'Function', 'Null', 'Symbol'];
-  typeArr.forEach(item=>{
-    type[`is${item}`] = obj => Object.prototype.toString.call(obj) == '[object ' + item + ']';
+  const type = {}
+  const typeArr = ['String', 'Object', 'Number', 'Array', 'Undefined', 'Function', 'Null', 'Symbol']
+  typeArr.forEach(item => {
+    type[`is${item}`] = obj => Object.prototype.toString.call(obj) === '[object ' + item + ']'
   })
   type.isBoolean = obj => typeof obj === 'boolean'
-  type.isEmpty = obj =>  JSON.stringify(obj) === '[]' || JSON.stringify(obj) ==='{}' || !obj
+  type.isEmpty = obj => JSON.stringify(obj) === '[]' || JSON.stringify(obj) === '{}' || !obj
   return type
-})();
-
-
+})()
 
 export default {
   ...Type,
@@ -36,48 +34,48 @@ export default {
   //   }
   // },
   strToArr(str) {
-    if (!str || str.length === 0) return [];
-    if (typeof str !== 'string') return str;
-    str = str.replace(/，|\\|\\n/ig, ',').trim().split(',');
-    const arr = [...new Set(str)];
-    const len = arr.length;
-    if (arr[len - 1] === '') arr.length = len - 1;
-    return arr;
+    if (!str || str.length === 0) return []
+    if (typeof str !== 'string') return str
+    str = str.replace(/，|\\|\\n/ig, ',').trim().split(',')
+    const arr = [...new Set(str)]
+    const len = arr.length
+    if (arr[len - 1] === '') arr.length = len - 1
+    return arr
   },
-  debounce(fun,delay=500){
-    fun.timer = null;
-    return function(...args){
-      let that = this
+  debounce(fun, delay = 500) {
+    fun.timer = null
+    return function(...args) {
+      const that = this
       clearTimeout(fun.timer)
-      fun.timer = setTimeout(()=>{
-        fun.apply(that,args)
-      },delay)
+      fun.timer = setTimeout(() => {
+        fun.apply(that, args)
+      }, delay)
     }
   },
   cloneDeep(obj) {
     function deepCopy(obj) {
-      let result = Array.isArray(obj) ? [] : {};
-      for (let key in obj) {
+      const result = Array.isArray(obj) ? [] : {}
+      for (const key in obj) {
         if (obj.hasOwnProperty(key)) {
-          if (typeof obj[key] === 'object') {
-            result[key] = deepCopy(obj[key]);   //递归复制
+          if (typeof obj[key] === 'object' && !(obj[key] instanceof Date)) {
+            result[key] = deepCopy(obj[key]) // 递归复制
           } else {
-            result[key] = obj[key];
+            result[key] = obj[key]
           }
         }
       }
-      return result;
+      return result
     }
     return deepCopy(obj)
   },
   handlerEmpty(obj) {
-      if (this.isBoolean(obj)) return obj ? '是' : '否';
-      //else if (moment.isDate(empty)) return this.format(empty);
-      else if (this.isNumber(obj)) return obj;
-      else if(this.isEmpty(obj))return '';
-      else return obj;
+    if (this.isBoolean(obj)) return obj ? '是' : '否'
+    // else if (moment.isDate(empty)) return this.format(empty);
+    else if (this.isNumber(obj)) return obj
+    else if (this.isEmpty(obj)) return ''
+    else return obj
   },
-  uniq(arr){
+  uniq(arr) {
     return [...new Set(arr)]
   },
   parseTime(time, cFormat) {

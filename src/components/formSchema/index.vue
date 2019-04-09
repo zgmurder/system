@@ -1,38 +1,49 @@
 <template>
   <el-form
-    class="com-form"
-    :class="{'form-flex':schema.length>2}"
     ref="form"
+    :class="{'form-flex':schema.length>2}"
+    class="com-form"
     label-width="100px"
   >
+    <slot name="title"/>
     <el-form-item
-      class="schema-form-item"
-      :label="field.label"
       v-for="(field, index) in schema"
+      v-show="handleControl(field.controlBy)"
+      :label="field.label"
       :required="field.required"
       :error="field.error"
       :key="index"
       :style="{width: field.width}"
+      class="schema-form-item"
     >
       <component
-        style="width: 100%"
-        clearable
         :is="'el-'+field.fieldType"
-        @input="handleInput($event,field)"
-        @change="handleChange($event,field)"
-        @select="handleChange($event,field)"
         :default-first-option="true"
         v-bind="field"
         v-model="field[field.vModel]"
+        style="width: 100%"
+        clearable
+        @input="handleInput($event,field)"
+        @change="handleChange($event,field,index)"
+        @select="handleChange($event,field,index)"
       >
-        
-        <template v-if="field.options">
+
+        <template v-if="field.fieldType === 'select'">
           <el-option
+            v-for="(item,index) in field.options||[]"
+            :key="index"
+            :disabled="item.disabled"
+            :label="handleLabel(item,field)"
+            :value="handleValue(item,field,index)"
+          />
+        </template>
+        <template v-if="field.fieldType === 'radio-group'">
+          <el-radio
             v-for="(item,index) in field.options"
             :key="index"
-            :label="handleLabelOrValue(item,field.optLabel)"
-            :value="handleLabelOrValue(item,field.optValue,index)"
-          ></el-option>
+            :disabled="item.disabled"
+            :label="handleValue(item,field,index)"
+          >{{ handleLabel(item,field,index) }}</el-radio>
         </template>
       </component>
       <!-- <component v-if="field.component" :is="field.component"></component>
@@ -73,36 +84,29 @@
 
     <el-form-item class="btn-box">
       <el-button v-if="!editing" type="primary" @click="onSubmit">立即创建</el-button>
-      <el-button v-else type="warning" @click="onSubmit" plain>修改</el-button>
+      <el-button v-else type="warning" plain @click="onSubmit">修改</el-button>
     </el-form-item>
   </el-form>
 </template>
 
 <script>
 export default {
-  name: "com-form",
+  name: 'ComForm',
   props: {
     schema: {
+      type: Array,
       required: true
     },
     editing: {
+      type: Boolean,
       default: false
     }
   },
   data() {
     return {
       showMessage: false
-    };
+    }
   },
-  created() {
-    this._initValues = this.schema.map(item => item[item.vModel]);
-    this.schema.forEach(item => {
-        this.$set(item, item.vModel, item[item.vModel]);
-        if (item.required) this.$set(item, "error", "");
-      });
-    console.log(this._initValues )
-  },
-  watch: {},
   computed: {
     // newSchema() {
     //   this.schema.forEach(item => {
@@ -113,44 +117,68 @@ export default {
     //   return this.schema;
     // }
   },
+  watch: {},
+  created() {
+    this._initValues = this.schema.map(item => item[item.vModel])
+    this.schema.forEach(item => {
+      this.$set(item, item.vModel, item[item.vModel])
+      if (item.required) this.$set(item, 'error', '')
+    })
+    console.log(this._initValues)
+  },
   methods: {
     onSubmit() {
-      const obj = {};
+      const obj = {}
       this.schema.forEach(item => {
         // if (typeof item[item.vModel] === "string")
         //   item[item.vModel] = item[item.vModel].tirm();
-        if (item.required && this.$tools.isEmpty(item[item.vModel])) item.error = item.errorMassage||'此项必填';
-        else if (item.validate && !item.validate(item)) item.error = item.errorMassage||'不合规则';
-        else item.error = "";
-        obj[item.vModel] = item[item.vModel];
-      });
-      const dataIsOk = !this.schema.some(item => !!item.error);
+        if (item.required && this.$tools.isEmpty(item[item.vModel]) && item[item.vModel] !== 0) item.error = item.errorMassage || '此项必填'
+        else if (item.validate && !item.validate(item)) item.error = item.errorMassage || '不合规则'
+        else item.error = ''
+        obj[item.vModel] = item[item.vModel]
+      })
+      const dataIsOk = !this.schema.some(item => !!item.error)
       if (dataIsOk) {
-        this.$emit('formFinish',obj)
+        this.$emit('formFinish', obj)
       }
     },
     initForm() {
-      this.schema.splice(this._initValues.length,this.schema.length-this._initValues.length)
+      this.schema.splice(this._initValues.length, this.schema.length - this._initValues.length)
       this.schema.forEach((item, index) => {
-        item[item.vModel] = this._initValues[index];
-        item.error = "";
-      });
+        item[item.vModel] = this._initValues[index]
+        item.error = ''
+      })
     },
     handleInput(value, item) {
-      if (item.required && !item[item.vModel]) item.error = item.errorMassage;
-      else item.error = "";
-      item.onInput && item.onInput(value,item)
+      if (item.required && !item[item.vModel]) item.error = item.errorMassage
+      else item.error = ''
+      item.onInput && item.onInput(value, item)
     },
-    handleChange($event,field) {
-      const found = this.$tools.isArray(field.options) && field.options.find(item=>item.name === $event)
-      field.onChange && field.onChange(field,$event,found)
+    handleChange($event, field, index) {
+      const found = this.$tools.isArray(field.options) && field.options.find(item => item.name === $event)
+      field.onChange && field.onChange(field, $event, found, index)
     },
-    handleLabelOrValue(item,labelOrValue,index){
-      if(labelOrValue === 'index')return index
-      return typeof item === 'object' ? (labelOrValue ? item[labelOrValue]:item.name) : item
+    // handleLabel(item, field) {
+    //   if (labelOrValue === 'index') return index
+    //   return typeof item === 'object' ? (labelOrValue ? item[labelOrValue] : item.name) : item
+    // },
+    handleValue(item, field, index) {
+      const { optValue, valueKey } = field
+      if (optValue === 'index') return index
+      else if (valueKey) return item
+      else { return typeof item === 'object' ? (optValue ? item[optValue] : item.name) : item }
     },
+    handleLabel(item, field, index) {
+      const { optLabel } = field
+      return typeof item === 'object' ? (optLabel ? item[optLabel] : item.name) : item
+    },
+    handleControl(controlBy) {
+      if (!controlBy || this.$tools.isEmpty(controlBy)) return true
+      const found = this.schema.find(item => item.vModel === controlBy.name)
+      return found ? (controlBy.handle && controlBy.handle(found[found.vModel])) : true
+    }
   }
-};
+}
 </script>
 
 <style scoped lang="scss">

@@ -1,24 +1,22 @@
 
 <template>
-  <el-tree 
-    :props="props" 
-    node-key="objectId" 
+  <el-tree
+    :props="props"
     v-bind="$attr"
-    :load="loadNode" 
-    lazy 
+    :load="loadNode"
     :render-content="renderContent"
-    @check-change="handleCheckChange">
-      
-  </el-tree>
+    node-key="objectId"
+    lazy
+    @check-change="handleCheckChange"/>
 </template>
 <script>
 export default {
-    props: {
-        loadNode: {
-            type: Function,
-            required:true,
-        },
-    },
+  props: {
+    loadNode: {
+      type: Function,
+      required: true
+    }
+  },
   data() {
     // return {
     //     props: {
@@ -34,16 +32,11 @@ export default {
     // }
     return {
       props: {
-        label: "name",
-        children: "zones"
+        label: 'name',
+        isLeaf: 'isLeaf'
       },
       count: 1
-    };
-  },
-  mounted() {
-    // this.$nextTick(_=>{
-    //     this.maxHeight = document.body.clientHeight - 180 + this.height;
-    // });
+    }
   },
   computed: {
     // tree(){
@@ -53,28 +46,35 @@ export default {
     //     return this.$backendService.isAdmin();
     // }
   },
+  mounted() {
+    console.log(this.$attrs)
+
+    // this.$nextTick(_=>{
+    //     this.maxHeight = document.body.clientHeight - 180 + this.height;
+    // });
+  },
   methods: {
     handleCheckChange(data, checked, indeterminate) {
-      console.log(data, checked, indeterminate);
+      console.log(data, checked, indeterminate)
     },
     handleNodeClick(data) {
-      console.log(data);
+      console.log(data)
     },
     renderContent(h, { node, data, store }) {
-        return (
-          <span class="custom-tree-node">
-            <span>
-              {node.label}
-              <el-tag type="success" size="mini" class='tag'>团级支队</el-tag>
-              <el-tag type="info" size="mini" class='tag'>部队</el-tag>
-              <el-tag type="warning" size="mini" class='tag' >执勤支队</el-tag>
-            </span>
-            <span>
-              <el-button size="mini" on-click={ () => this.append(data) }>添加下级单位</el-button>
-              <el-button size="mini" on-click={ () => this.remove(node, data) }>查看编辑</el-button>
-            </span>
-          </span>);
-      }
+      return (
+        <span class='custom-tree-node'>
+          <span>
+            {node.label}
+            <el-tag type='success' size='mini' class='tag'>团级支队</el-tag>
+            <el-tag type='info' size='mini' class='tag'>部队</el-tag>
+            <el-tag type='warning' size='mini' class='tag' >执勤支队</el-tag>
+          </span>
+          <span>
+            <el-button size='mini' on-click={ () => this.append(data) }>添加下级单位</el-button>
+            <el-button size='mini' on-click={ () => this.remove(node, data) }>查看编辑</el-button>
+          </span>
+        </span>)
+    }
 
     // handleNodeClick(data) {
     //     if(this.rootOrg.objectId === data.objectId){
@@ -142,7 +142,7 @@ export default {
     //     return draggingNode.data.label.indexOf('三级 3-2-2') === -1;
     // }
   }
-};
+}
 </script>
 <style scope lang="scss">
 .custom-tree-node{
@@ -155,5 +155,5 @@ export default {
     margin-left: 10px;
   }
 }
-  
+
 </style>
