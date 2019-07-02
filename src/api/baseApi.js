@@ -43,7 +43,7 @@ export const queryListByOptions = (className, options, isCleanData = false) => {
 }
 export const queryListAndTotal = (className, options, isCleanData = false) => {
   const query = optionsToQuery(className, options)
-  query.includeAll().descending('createdAt')
+  query.include('*').descending('createdAt')
   return Promise.all([query.find(), query.count()]).then(([list, total]) => {
     return { list: !isCleanData ? list.map(cleanData) : list, total }
   })

@@ -102,6 +102,8 @@ const updateAllDailyReport = dailyReport => {
 const createMonthReport = (parseDailyReport) => {
   const { year, month } = dateToJSON(parseDailyReport.get('date'))
   const organization = parseDailyReport.get('organization')
+  console.log(1111)
+
   queryFirstByOptions(monthClassName, {
     equalTo: { date: new Date(year, month + 1, 0), organization }
   }).then(res => initOrUpdateMonthReport(parseDailyReport, res && res.objectId))
@@ -171,7 +173,7 @@ export const initDailyReport = async(org, date) => {
     if (!date) return { errorText: '本周一到今天的登记表已经全部登记' }
     else if (date.getDay() === 6 || !date.getDay()) return { errorText: '休息日暂时不支持登记' }
   }
-  const { year, month } = dateToJSON(date)
+  // const { year, month } = dateToJSON(date)
   const orgPointer = Parse.Object.fromJSON(org).toPointer()
   const prevDailyReport = await queryFirstByOptions(currClassName, {
     equalTo: { organization: orgPointer },
@@ -241,6 +243,8 @@ export const saveDailyReport = async tableData => {
     const month = res.get('date').getMonth()
     updateAllDailyReport(res).then(list => {
       const monthObj = groupBy(list, parseObj => parseObj.get('date').getMonth())
+      console.log(monthObj, 222)
+
       if (monthObj[month].length === 1)createMonthReport(res)
       updateAllMonthReport1(list)
     })

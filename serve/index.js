@@ -2,7 +2,7 @@ const express = require('express')
 const config = require('./config')
 const ParseServerObj = require('./Parse_Server')
 const ParseDashboard = require('./Parse_Dashboard')
-const ParseServer = require('parse-server').ParseServer
+// const ParseServer = require('parse-server').ParseServer
 
 const app = express()
 // 把 Parse Server 挂载在 /parse
@@ -15,4 +15,4 @@ httpServer.listen(config.serverPort, function() {
   console.log(`parse-server parse-dashboard are running on port ${config.serverPort}.`)
 })
 
-ParseServer.createLiveQueryServer(httpServer)
+// ParseServer.createLiveQueryServer(httpServer)

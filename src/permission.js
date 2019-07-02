@@ -31,6 +31,8 @@ router.beforeEach((to, from, next) => {
         store.dispatch('GetUserInfo').then(() => {
           return store.dispatch('GenerateRoutes', store.getters.role).then((routers) => {
             router.addRoutes(store.getters.addRouters) // 动态添加可访问路由表
+            console.log(to)
+
             next({ ...to, replace: true })
           })
         })

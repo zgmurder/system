@@ -7,6 +7,6 @@ module.exports = {
   'appId': '7269F0A31FC620688AAE12AAD9E3CD85',
   'masterKey': '7269F0A31FC620688AAE12AAD9E3CD85',
   'JsKey': '7269F0A31FC620688AAE12AAD9E3CD85',
-  'appName': 'armysystem2',
-  liveQuery: { classNames: ['DailyReport'] }
+  'appName': 'armysystem2'
+  // liveQuery: { classNames: ['DailyReport'] }
 }

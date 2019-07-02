@@ -96,7 +96,7 @@ export default {
           options: Roles
         }
       ],
-      className: '_User',
+      className: 'User',
       org: {}
     }
   },
